@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#7fd4d4">
+    <meta name="description" content="MITENSION - Registro personal de tensión arterial">
+
+    <title>MITENSION</title>
+
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+</head>
+<body>
+
+    <!-- =====================================================
+         CABECERA
+         ===================================================== -->
+    <header class="app-header">
+        <div class="header-brand">
+            <svg class="logo-star" viewBox="0 0 100 100" aria-hidden="true">
+                <polygon points="50,4 58,42 96,50 58,58 50,96 42,58 4,50 42,42"
+                         fill="#ffffff" stroke="#4ab0b0" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            <h1>MITENSION</h1>
+        </div>
+    </header>
+
+    <!-- =====================================================
+         TOAST (notificaciones flotantes)
+         ===================================================== -->
+    <div id="toast" class="toast oculto" role="status" aria-live="polite"></div>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL: lista de tomas
+         ===================================================== -->
+    <main class="app-main">
+        <section class="lista-section">
+            <h2 class="lista-titulo">Tus tomas</h2>
+            <ul id="lista-tomas" class="lista-tomas"></ul>
+            <p id="lista-vacia" class="lista-vacia oculto">
+                Aún no hay tomas registradas. Pulsa el botón rojo para empezar.
+            </p>
+        </section>
+    </main>
+
+    <!-- =====================================================
+         BLOQUE INFERIOR: medicacion actual
+         ===================================================== -->
+    <section class="bloque-medicacion-actual">
+        <h3 class="bloque-titulo">Medicación actual</h3>
+        <div id="medicacion-actual-contenido">
+            <p class="medicacion-vacia">Sin medicación registrada</p>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         BARRA DE ACCIONES (tres botones)
+         ===================================================== -->
+    <nav class="action-bar">
+        <button id="btn-nueva-toma" class="action-btn action-btn-rojo" type="button">
+            <span class="action-icono">+</span>
+            <span class="action-label">Nueva toma</span>
+        </button>
+        <button id="btn-cambiar-medicacion" class="action-btn action-btn-azul" type="button">
+            <span class="action-icono">℞</span>
+            <span class="action-label">Medicación</span>
+        </button>
+        <button id="btn-informes" class="action-btn action-btn-negro" type="button">
+            <span class="action-icono">📄</span>
+            <span class="action-label">Informes</span>
+        </button>
+    </nav>
+
+    <!-- =====================================================
+         MODAL: NUEVA TOMA
+         ===================================================== -->
+    <div id="modal-nueva-toma" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="nt-titulo">
+        <div class="modal-backdrop" data-cierra-modal></div>
+        <div class="modal-contenido">
+            <button class="modal-cerrar" data-cierra-modal aria-label="Cerrar">&times;</button>
+            <h2 id="nt-titulo" class="modal-titulo">Nueva toma</h2>
+
+            <form id="form-nueva-toma" novalidate>
+                <div class="form-row">
+                    <label for="nt-sistolica">Sistólica</label>
+                    <div class="input-con-unidad">
+                        <input type="number" id="nt-sistolica" min="0" max="999" step="1" inputmode="numeric" required>
+                        <span class="unidad">mmHg</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label for="nt-diastolica">Diastólica</label>
+                    <div class="input-con-unidad">
+                        <input type="number" id="nt-diastolica" min="0" max="999" step="1" inputmode="numeric" required>
+                        <span class="unidad">mmHg</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label for="nt-pulso">
+                        Pulso <span class="opcional">(opcional)</span>
+                    </label>
+                    <div class="input-con-unidad">
+                        <input type="number" id="nt-pulso" min="0" max="999" step="1" inputmode="numeric">
+                        <span class="unidad">ppm</span>
+                    </div>
+                </div>
+
+                <p id="nt-error" class="form-error oculto"></p>
+
+                <button type="submit" class="btn btn-primario">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MODAL: CAMBIAR MEDICACION
+         ===================================================== -->
+    <div id="modal-cambiar-medicacion" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="cm-titulo">
+        <div class="modal-backdrop" data-cierra-modal></div>
+        <div class="modal-contenido">
+            <button class="modal-cerrar" data-cierra-modal aria-label="Cerrar">&times;</button>
+            <h2 id="cm-titulo" class="modal-titulo">Actualizar medicación</h2>
+            <p class="modal-hint">
+                Se muestra lo que estás tomando ahora. Añade, edita o elimina medicamentos.
+                Al guardar se crea una entrada nueva con la fecha indicada.
+            </p>
+
+            <form id="form-cambiar-medicacion" novalidate>
+                <div class="form-row">
+                    <label for="cm-fecha">Fecha</label>
+                    <input type="date" id="cm-fecha" class="input-fecha">
+                </div>
+
+                <div id="cm-medicamentos" class="cm-medicamentos"></div>
+
+                <button type="button" id="cm-add-med" class="btn btn-secundario">
+                    + Añadir medicamento
+                </button>
+
+                <p id="cm-error" class="form-error oculto"></p>
+
+                <button type="submit" class="btn btn-primario btn-guardar">
+                    Guardar medicación
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MODAL: INFORMES (PDF)
+         ===================================================== -->
+    <div id="modal-informes" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="inf-titulo">
+        <div class="modal-backdrop" data-cierra-modal></div>
+        <div class="modal-contenido">
+            <button class="modal-cerrar" data-cierra-modal aria-label="Cerrar">&times;</button>
+            <h2 id="inf-titulo" class="modal-titulo">Generar informe PDF</h2>
+            <p class="modal-hint">
+                Crea un PDF con tus últimas tomas y la medicación vigente en cada una.
+                Pensado para llevárselo al médico.
+            </p>
+
+            <!-- Vista inicial: elegir tipo de informe -->
+            <div id="inf-selector">
+                <p class="inf-instr">Elige el tipo de informe:</p>
+                <div class="inf-opciones">
+                    <button type="button" class="inf-opcion" data-cantidad="30" data-estilo="visual">
+                        <span class="inf-num">30</span>
+                        <span class="inf-label">últimas tomas</span>
+                    </button>
+                    <button type="button" class="inf-opcion" data-cantidad="60" data-estilo="visual">
+                        <span class="inf-num">60</span>
+                        <span class="inf-label">últimas tomas</span>
+                    </button>
+                    <button type="button" class="inf-opcion inf-opcion-medico" data-cantidad="60" data-estilo="medico">
+                        <span class="inf-num inf-num-medico">Médico</span>
+                        <span class="inf-label">últimas 60, sin colores</span>
+                    </button>
+                </div>
+                <p class="inf-nota">Si tienes menos, se incluirán todas las que haya.</p>
+            </div>
+
+            <!-- Vista de resultado: tras generar PDF -->
+            <div id="inf-resultado" class="oculto">
+                <p id="inf-mensaje" class="inf-mensaje"></p>
+                <button type="button" id="inf-guardar" class="btn btn-primario">Guardar PDF</button>
+                <button type="button" id="inf-compartir" class="btn btn-secundario">Compartir / Email</button>
+                <button type="button" id="inf-volver" class="btn-mini btn-volver">← Generar otro</button>
+            </div>
+
+            <p id="inf-error" class="form-error oculto"></p>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         PLANTILLAS: medicamento y principio activo
+         (se clonan en JS, no se renderizan)
+         ===================================================== -->
+    <template id="tpl-medicamento">
+        <div class="med-block">
+            <div class="med-block-header">
+                <span class="med-block-title">Medicamento <span class="med-num"></span></span>
+                <button type="button" class="med-block-remove" aria-label="Eliminar medicamento">&times;</button>
+            </div>
+
+            <div class="form-row">
+                <label>Nombre <span class="obligatorio">*</span></label>
+                <input type="text" class="med-nombre" placeholder="ej. Losartán 100" required>
+            </div>
+
+            <div class="form-row">
+                <label>Momento del día</label>
+                <div class="med-momentos">
+                    <label><input type="checkbox" value="mañana"> Mañana</label>
+                    <label><input type="checkbox" value="mediodía"> Mediodía</label>
+                    <label><input type="checkbox" value="noche"> Noche</label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label>Principios activos <span class="opcional">(opcional)</span></label>
+                <div class="med-principios-list"></div>
+                <button type="button" class="med-add-principio btn-mini">+ Añadir principio</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-principio">
+        <div class="principio-row">
+            <input type="text" class="principio-nombre" placeholder="ej. losartán">
+            <input type="number" class="principio-mg" placeholder="mg" min="0" step="0.1" inputmode="decimal">
+            <span class="unidad-mini">mg</span>
+            <button type="button" class="principio-remove" aria-label="Eliminar principio">&times;</button>
+        </div>
+    </template>
+
+    <!-- =====================================================
+         SCRIPTS
+         ===================================================== -->
+    <!-- Librerias externas (ya locales para offline real) -->
+    <script src="js/lib/dexie.min.js"></script>
+    <script src="js/lib/pdfmake.min.js"></script>
+    <script src="js/lib/vfs_fonts.js"></script>
+
+    <!-- Codigo propio -->
+    <script src="js/db.js"></script>
+    <script src="js/ui-comunes.js"></script>
+    <script src="js/ui-listado.js"></script>
+    <script src="js/ui-medicacion-actual.js"></script>
+    <script src="js/ui-nueva-toma.js"></script>
+    <script src="js/ui-cambiar-medicacion.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/ui-informes.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

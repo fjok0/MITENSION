@@ -1,0 +1,680 @@
+/* ============================================================
+   MITENSION - estilos completos
+   Paleta blanco-cian + OMS suaves + acciones (rojo/azul/negro)
+   ============================================================ */
+
+/* ---------- VARIABLES (paleta global) ---------- */
+:root {
+    --color-fondo:         #f0fbfc;
+    --color-superficie:    #ffffff;
+    --color-borde:         #cfe9eb;
+    --color-acento:        #7fd4d4;
+    --color-acento-oscuro: #4ab0b0;
+    --color-texto:         #2a3a3d;
+    --color-texto-suave:   #5d7174;
+
+    /* OMS suaves */
+    --color-verde:    #c8f0c8;
+    --color-amarillo: #fff2b3;
+    --color-rojo:     #ffc9c9;
+
+    /* botones de accion (mas saturados, son CTAs) */
+    --color-rojo-accion:  #e85a5a;
+    --color-azul-accion:  #5b8dd6;
+    --color-negro-accion: #3d3d3d;
+
+    --radio:  12px;
+    --sombra: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+    --altura-action-bar:    74px;
+    --altura-medicacion:    auto;
+}
+
+/* ---------- RESET MINIMO ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;            /* la lista es la que tiene scroll */
+}
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+.app-header {
+    background-color: var(--color-acento);
+    color: var(--color-texto);
+    padding: 0.85rem 1rem;
+    text-align: center;
+    box-shadow: var(--sombra);
+    flex-shrink: 0;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.logo-star {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.08));
+}
+
+.app-header h1 {
+    font-size: 1.35rem;
+    letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radio);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 0.92rem;
+    font-weight: 500;
+    max-width: 90%;
+    background-color: var(--color-verde);
+    color: #1f4a1f;
+}
+.toast.toast-info  { background-color: var(--color-amarillo); color: #5a4500; }
+.toast.toast-error { background-color: var(--color-rojo);     color: #7a2020; }
+
+/* ============================================================
+   LISTA DE TOMAS (main)
+   ============================================================ */
+.app-main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.75rem 1rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+.lista-section {
+    max-width: 720px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.lista-titulo {
+    font-size: 1.05rem;
+    color: var(--color-acento-oscuro);
+    margin-bottom: 0.6rem;
+}
+
+.lista-tomas {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toma-row {
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-left: 6px solid transparent;
+    border-radius: var(--radio);
+    padding: 0.7rem 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--sombra);
+}
+
+.toma-row.toma-verde    { border-left-color: #6fc66f; }
+.toma-row.toma-amarillo { border-left-color: #e0c350; }
+.toma-row.toma-rojo     { border-left-color: #d36161; }
+
+.toma-valores {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.toma-cifras {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-texto);
+}
+
+.toma-pulso {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+
+.toma-fecha {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+    text-align: right;
+}
+
+.lista-vacia {
+    text-align: center;
+    color: var(--color-texto-suave);
+    padding: 1.5rem 1rem;
+    background-color: var(--color-superficie);
+    border: 1px dashed var(--color-borde);
+    border-radius: var(--radio);
+}
+
+/* ============================================================
+   BLOQUE MEDICACION ACTUAL (siempre visible, encima de action-bar)
+   ============================================================ */
+.bloque-medicacion-actual {
+    background-color: var(--color-superficie);
+    border-top: 1px solid var(--color-borde);
+    padding: 0.7rem 1rem;
+    flex-shrink: 0;
+    max-height: 30vh;
+    overflow-y: auto;
+}
+
+.bloque-titulo {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-acento-oscuro);
+    margin-bottom: 0.4rem;
+}
+
+.medicacion-lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.medicacion-lista li {
+    font-size: 0.9rem;
+    color: var(--color-texto);
+}
+
+.medicacion-fecha {
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--color-texto-suave);
+}
+
+.medicacion-vacia {
+    font-size: 0.88rem;
+    color: var(--color-texto-suave);
+    font-style: italic;
+}
+
+/* ============================================================
+   BARRA DE ACCIONES (3 botones rojo/azul/negro)
+   ============================================================ */
+.action-bar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    background-color: var(--color-superficie);
+    border-top: 1px solid var(--color-borde);
+    flex-shrink: 0;
+}
+
+.action-btn {
+    flex: 1;
+    border: none;
+    border-radius: var(--radio);
+    color: #ffffff;
+    padding: 0.55rem 0.4rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.action-btn:active { transform: translateY(1px); }
+.action-btn:hover  { filter: brightness(1.08); }
+
+.action-icono {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.action-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.action-btn-rojo  { background-color: var(--color-rojo-accion); }
+.action-btn-azul  { background-color: var(--color-azul-accion); }
+.action-btn-negro { background-color: var(--color-negro-accion); }
+
+/* ============================================================
+   MODALES (bottom-sheet en movil)
+   ============================================================ */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-contenido {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    background-color: var(--color-superficie);
+    border-radius: var(--radio) var(--radio) 0 0;
+    padding: 1.25rem;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+    animation: modal-up 0.18s ease;
+}
+
+@keyframes modal-up {
+    from { transform: translateY(100%); opacity: 0.6; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-cerrar {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.5rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: none;
+    background: transparent;
+    font-size: 1.6rem;
+    color: var(--color-texto-suave);
+    cursor: pointer;
+    line-height: 1;
+}
+.modal-cerrar:hover { color: var(--color-texto); }
+
+.modal-titulo {
+    color: var(--color-acento-oscuro);
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+    padding-right: 2rem;
+}
+
+.modal-hint {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+    background-color: var(--color-fondo);
+    border-left: 3px solid var(--color-acento);
+    padding: 0.5rem 0.7rem;
+    border-radius: 0 var(--radio) var(--radio) 0;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   FORMULARIOS comunes (usados en ambos modales)
+   ============================================================ */
+.form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.85rem;
+}
+
+.form-row label {
+    font-size: 0.9rem;
+    color: var(--color-texto);
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.opcional {
+    color: var(--color-texto-suave);
+    font-weight: normal;
+    font-size: 0.82rem;
+}
+
+.obligatorio {
+    color: #d36161;
+    font-weight: 700;
+}
+
+.input-con-unidad {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.input-con-unidad input {
+    flex: 1;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    font-size: 1.05rem;
+    color: var(--color-texto);
+    background-color: var(--color-fondo);
+    -moz-appearance: textfield;
+}
+
+.input-con-unidad input::-webkit-outer-spin-button,
+.input-con-unidad input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-con-unidad input:focus,
+.input-fecha:focus {
+    outline: none;
+    border-color: var(--color-acento-oscuro);
+    background-color: #ffffff;
+}
+
+.unidad {
+    color: var(--color-texto-suave);
+    font-size: 0.88rem;
+    min-width: 3.2rem;
+}
+
+.input-fecha {
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    font-size: 1rem;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    width: 100%;
+}
+
+/* ---------- Mensaje de error del form ---------- */
+.form-error {
+    background-color: var(--color-rojo);
+    color: #7a2020;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--radio);
+    font-size: 0.88rem;
+    margin-bottom: 0.7rem;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: var(--radio);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-primario {
+    background-color: var(--color-acento-oscuro);
+    color: #ffffff;
+}
+.btn-primario:hover  { background-color: #3a9090; }
+.btn-primario:active { transform: translateY(1px); }
+
+.btn-secundario {
+    background-color: var(--color-fondo);
+    color: var(--color-acento-oscuro);
+    border: 1px dashed var(--color-acento);
+    margin-bottom: 0.85rem;
+}
+.btn-secundario:hover { background-color: #e2f6f7; }
+.btn-secundario:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-guardar { margin-top: 0.5rem; }
+
+.btn-mini {
+    background-color: transparent;
+    color: var(--color-acento-oscuro);
+    border: 1px solid var(--color-acento);
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--radio);
+    font-size: 0.82rem;
+    cursor: pointer;
+    margin-top: 0.3rem;
+}
+.btn-mini:hover { background-color: #e2f6f7; }
+
+/* ============================================================
+   CAMBIAR MEDICACION (bloques dinamicos)
+   ============================================================ */
+.cm-medicamentos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.med-block {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    padding: 0.85rem;
+}
+
+.med-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+
+.med-block-title {
+    font-weight: 600;
+    color: var(--color-acento-oscuro);
+    font-size: 0.95rem;
+}
+
+.med-block-remove {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #d36161;
+    cursor: pointer;
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1;
+}
+
+.med-nombre {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    font-size: 1rem;
+    background-color: #ffffff;
+}
+.med-nombre:focus { outline: none; border-color: var(--color-acento-oscuro); }
+
+.med-momentos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+}
+
+.med-momentos label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.med-momentos input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--color-acento-oscuro);
+}
+
+.med-principios-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.principio-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.principio-nombre,
+.principio-mg {
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    font-size: 0.9rem;
+    background-color: #ffffff;
+}
+
+.principio-nombre { flex: 1; }
+.principio-mg     { width: 5rem; -moz-appearance: textfield; }
+.principio-mg::-webkit-outer-spin-button,
+.principio-mg::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.unidad-mini {
+    color: var(--color-texto-suave);
+    font-size: 0.8rem;
+}
+
+.principio-remove {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: #d36161;
+    cursor: pointer;
+    width: 1.6rem;
+    height: 1.6rem;
+    line-height: 1;
+}
+
+/* ============================================================
+   PANTALLA INFORMES (PDF)
+   ============================================================ */
+.inf-instr {
+    font-size: 0.9rem;
+    color: var(--color-texto-suave);
+    margin-bottom: 0.5rem;
+}
+
+.inf-opciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.55rem;
+    margin: 0.5rem 0;
+}
+
+.inf-opcion {
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-fondo);
+    border: 2px solid var(--color-acento);
+    border-radius: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    color: var(--color-acento-oscuro);
+    font-weight: 600;
+    padding: 0.5rem 0.3rem;
+    text-align: center;
+    transition: transform 0.1s ease, background-color 0.15s ease;
+}
+.inf-opcion:hover  { background-color: #e2f6f7; }
+.inf-opcion:active { transform: scale(0.97); }
+.inf-opcion:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.inf-num {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.inf-label {
+    font-size: 0.72rem;
+    color: var(--color-texto-suave);
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+/* Boton "Medico": estilo mas sobrio, gris en vez de cian */
+.inf-opcion-medico {
+    background-color: #f4f4f4;
+    border-color: #888888;
+    color: #333333;
+}
+.inf-opcion-medico:hover { background-color: #ececec; }
+
+.inf-num-medico {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.inf-nota {
+    font-size: 0.78rem;
+    color: var(--color-texto-suave);
+    text-align: center;
+    margin-top: 0.4rem;
+    font-style: italic;
+}
+
+.inf-mensaje {
+    background-color: var(--color-verde);
+    color: #1f4a1f;
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--radio);
+    font-size: 0.88rem;
+    margin-bottom: 0.85rem;
+    text-align: center;
+    word-break: break-all;
+}
+
+#inf-resultado .btn { margin-bottom: 0.5rem; }
+#inf-resultado .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn-volver {
+    display: block;
+    margin: 0.4rem auto 0;
+}
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+.oculto { display: none !important; }

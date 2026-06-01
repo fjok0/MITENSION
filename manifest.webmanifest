@@ -1,0 +1,26 @@
+{
+    "name": "MITENSION",
+    "short_name": "MITENSION",
+    "description": "Registro personal de tensión arterial",
+    "lang": "es",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f0fbfc",
+    "theme_color": "#7fd4d4",
+    "icons": [
+        {
+            "src": "assets/logo.svg",
+            "sizes": "192x192 512x512 any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/logo.svg",
+            "sizes": "192x192 512x512 any",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ]
+}
