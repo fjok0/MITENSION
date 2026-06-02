@@ -59,6 +59,7 @@ Los datos persisten entre recargas. Para verlos en bruto: DevTools -> pestana **
 
 ## Estado actual
 
+### v1.0
 - [x] Fase 1 — Estructura inicial del proyecto
 - [x] Fase 2 — Base de datos local (Dexie)
 - [x] Fase 3 — Pantalla "Nueva toma de tension" (ahora como modal)
@@ -66,7 +67,12 @@ Los datos persisten entre recargas. Para verlos en bruto: DevTools -> pestana **
 - [x] Fase 5 (parcial) — Modal "Actualizar medicacion"
 - [x] Iteracion B / Fase 6 — Pantalla de Informes (PDF ultimas 30 / 60)
 - [x] Fase 7 — PWA instalable + offline real
-- [ ] Fase 8 — Pulido visual y pruebas finales
+- [x] Fase 8 — Pulido visual y pruebas finales
+
+### v1.1
+- [x] Editar y borrar tomas de tension desde el listado (tap en una toma)
+- [x] Historial de medicacion: ver entradas pasadas, editar y borrar (tap en el bloque "Medicacion actual")
+- [x] Reordenacion del listado de tomas por fecha+hora visible
 
 ## Tips de desarrollo con el Service Worker
 
@@ -81,8 +87,3 @@ y NO los recoge de Live Server aunque los modifiques. Para ver tus cambios:
 Cuando subas una version nueva en produccion, basta con cambiar `CACHE_NAME`
 dentro de `service-worker.js` (ej. `mitension-v2`) — el SW limpia el cache viejo
 en su `activate`.
-- [ ] Fase 4 — Pantalla "Historico de tomas"
-- [ ] Fase 5 — Pantalla "Gestion de medicacion"
-- [ ] Fase 6 — Generacion de PDF + compartir/guardar
-- [ ] Fase 7 — PWA instalable + offline real
-- [ ] Fase 8 — Pulido visual y pruebas finales
