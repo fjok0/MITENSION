@@ -152,6 +152,125 @@
     </div>
 
     <!-- =====================================================
+         MODAL: HISTORIAL DE MEDICACION
+         ===================================================== -->
+    <div id="modal-historial-medicacion" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="hm-titulo">
+        <div class="modal-backdrop" data-cierra-modal></div>
+        <div class="modal-contenido">
+            <button class="modal-cerrar" data-cierra-modal aria-label="Cerrar">&times;</button>
+
+            <!-- Vista 1: lista -->
+            <div id="hm-vista-lista">
+                <h2 id="hm-titulo" class="modal-titulo">Historial de medicación</h2>
+                <p class="modal-hint">Toca cualquier entrada para verla, editarla o borrarla. La más reciente arriba.</p>
+                <ul id="hm-lista" class="hm-lista"></ul>
+                <p id="hm-vacia" class="lista-vacia oculto">Sin entradas registradas.</p>
+            </div>
+
+            <!-- Vista 2: detalle de una entrada -->
+            <div id="hm-vista-detalle" class="oculto">
+                <button type="button" id="hm-volver" class="btn-mini btn-volver">← Volver al historial</button>
+                <h2 class="modal-titulo">Entrada de medicación</h2>
+                <p class="dt-fecha">Fecha: <span id="hm-detalle-fecha"></span></p>
+                <div id="hm-detalle-meds" class="hm-detalle-meds"></div>
+                <div class="dt-acciones">
+                    <button type="button" id="hm-detalle-editar" class="btn btn-primario">Editar</button>
+                    <button type="button" id="hm-detalle-borrar" class="btn btn-borrar">Borrar</button>
+                </div>
+            </div>
+
+            <!-- Vista 3: confirmar borrado -->
+            <div id="hm-vista-confirmar" class="oculto">
+                <h2 class="modal-titulo">¿Borrar esta entrada?</h2>
+                <p class="modal-hint">Esta acción no se puede deshacer. Las tomas seguirán existiendo, pero su medicación vigente puede cambiar.</p>
+                <div class="dt-acciones">
+                    <button type="button" id="hm-cancelar-borrar" class="btn btn-secundario">Cancelar</button>
+                    <button type="button" id="hm-confirmar-borrar" class="btn btn-borrar">Sí, borrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MODAL: DETALLE / EDITAR / BORRAR TOMA
+         ===================================================== -->
+    <div id="modal-detalle-toma" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="dt-titulo">
+        <div class="modal-backdrop" data-cierra-modal></div>
+        <div class="modal-contenido">
+            <button class="modal-cerrar" data-cierra-modal aria-label="Cerrar">&times;</button>
+
+            <!-- Vista 1: Detalle -->
+            <div id="dt-vista-detalle">
+                <h2 id="dt-titulo" class="modal-titulo">Toma registrada</h2>
+                <p class="dt-fecha" id="dt-fecha-hora"></p>
+                <div class="dt-cifras-block" id="dt-cifras-block">
+                    <span class="dt-cifras-grandes" id="dt-cifras"></span>
+                    <span class="dt-unidad">mmHg</span>
+                </div>
+                <p class="dt-pulso" id="dt-pulso"></p>
+                <p class="dt-categoria" id="dt-categoria"></p>
+                <div class="dt-acciones">
+                    <button type="button" id="dt-editar" class="btn btn-primario">Editar</button>
+                    <button type="button" id="dt-borrar" class="btn btn-borrar">Borrar</button>
+                </div>
+            </div>
+
+            <!-- Vista 2: Confirmar borrado -->
+            <div id="dt-vista-confirmar" class="oculto">
+                <h2 class="modal-titulo">¿Borrar esta toma?</h2>
+                <p class="modal-hint">Esta acción no se puede deshacer.</p>
+                <div class="dt-acciones">
+                    <button type="button" id="dt-cancelar-borrar" class="btn btn-secundario">Cancelar</button>
+                    <button type="button" id="dt-confirmar-borrar" class="btn btn-borrar">Sí, borrar</button>
+                </div>
+            </div>
+
+            <!-- Vista 3: Editar -->
+            <div id="dt-vista-editar" class="oculto">
+                <h2 class="modal-titulo">Editar toma</h2>
+                <form id="form-editar-toma" novalidate>
+                    <div class="form-row-double">
+                        <div class="form-row">
+                            <label for="et-fecha">Fecha</label>
+                            <input type="date" id="et-fecha" class="input-fecha" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="et-hora">Hora</label>
+                            <input type="time" id="et-hora" class="input-fecha" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label for="et-sistolica">Sistólica</label>
+                        <div class="input-con-unidad">
+                            <input type="number" id="et-sistolica" min="0" max="999" step="1" inputmode="numeric" required>
+                            <span class="unidad">mmHg</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label for="et-diastolica">Diastólica</label>
+                        <div class="input-con-unidad">
+                            <input type="number" id="et-diastolica" min="0" max="999" step="1" inputmode="numeric" required>
+                            <span class="unidad">mmHg</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label for="et-pulso">Pulso <span class="opcional">(opcional)</span></label>
+                        <div class="input-con-unidad">
+                            <input type="number" id="et-pulso" min="0" max="999" step="1" inputmode="numeric">
+                            <span class="unidad">ppm</span>
+                        </div>
+                    </div>
+                    <p id="et-error" class="form-error oculto"></p>
+                    <div class="dt-acciones">
+                        <button type="button" id="et-cancelar" class="btn btn-secundario">Cancelar</button>
+                        <button type="submit" class="btn btn-primario">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
          MODAL: INFORMES (PDF)
          ===================================================== -->
     <div id="modal-informes" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="inf-titulo">
@@ -253,6 +372,8 @@
     <script src="js/ui-medicacion-actual.js"></script>
     <script src="js/ui-nueva-toma.js"></script>
     <script src="js/ui-cambiar-medicacion.js"></script>
+    <script src="js/ui-historial-medicacion.js"></script>
+    <script src="js/ui-detalle-toma.js"></script>
     <script src="js/pdf-generator.js"></script>
     <script src="js/ui-informes.js"></script>
     <script src="js/app.js"></script>

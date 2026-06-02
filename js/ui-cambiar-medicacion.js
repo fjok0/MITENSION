@@ -1,7 +1,10 @@
 // ============================================================
-// MITENSION - logica del modal "Cambiar medicacion"
-// Permite anadir de 1 a 5 medicamentos, cada uno con momentos
-// del dia y opcionalmente principios activos.
+// MITENSION - logica del modal "Actualizar / Editar medicacion"
+// Soporta dos modos:
+//   - NUEVA: arrancado desde el boton azul. Precarga con la
+//            entrada mas reciente y al guardar crea una nueva.
+//   - EDITAR: arrancado desde el historial. Precarga con la
+//            entrada concreta y al guardar la actualiza.
 // ============================================================
 
 (function () {
@@ -10,6 +13,10 @@
     function $(id) { return document.getElementById(id); }
 
     const MAX_MEDICAMENTOS = 5;
+
+    let editandoId = null;   // null = modo NUEVA, numero = modo EDITAR
+
+    // ---------------- helpers de error ----------------
 
     function mostrarError(msg) {
         const e = $("cm-error");
@@ -26,70 +33,13 @@
         $("cm-medicamentos").innerHTML = "";
     }
 
-    async function abrir() {
-        limpiarMedicamentos();
-
-        // Precargar con la entrada de medicacion mas reciente, si existe
-        const todas = await MITENSION.listEntradasMedicacion();
-        if (todas.length > 0) {
-            const actual = todas[0];
-            for (const med of actual.medicamentos) {
-                anadirMedicamentoConDatos(med);
-            }
-        } else {
-            anadirMedicamento(); // primer arranque: un bloque vacio
-        }
-
-        $("cm-fecha").value = MITENSION.hoyISO();
-        limpiarError();
-        MITENSION_UI.abrirModal("modal-cambiar-medicacion");
-    }
-
-    /**
-     * Crea un bloque de medicamento ya rellenado con los datos dados.
-     * Se usa al pre-cargar la medicacion actual al abrir el modal.
-     */
-    function anadirMedicamentoConDatos(med) {
-        const contenedor = $("cm-medicamentos");
-        if (contenedor.children.length >= MAX_MEDICAMENTOS) return;
-
-        const tpl   = $("tpl-medicamento").content.cloneNode(true);
-        const block = tpl.querySelector(".med-block");
-
-        // Nombre
-        block.querySelector(".med-nombre").value = med.nombre || "";
-
-        // Momentos del dia
-        const checks = block.querySelectorAll(".med-momentos input[type='checkbox']");
-        checks.forEach(function (c) {
-            if (med.momentos && med.momentos.includes(c.value)) {
-                c.checked = true;
-            }
-        });
-
-        // Principios activos
-        const listaPrincipios = block.querySelector(".med-principios-list");
-        if (med.principios && med.principios.length > 0) {
-            for (const p of med.principios) {
-                const tplP = $("tpl-principio").content.cloneNode(true);
-                const row  = tplP.querySelector(".principio-row");
-                row.querySelector(".principio-nombre").value = p.nombre || "";
-                row.querySelector(".principio-mg").value =
-                    (p.mg !== null && p.mg !== undefined) ? p.mg : "";
-                listaPrincipios.appendChild(tplP);
-            }
-        }
-
-        contenedor.appendChild(tpl);
-        actualizarNumerosYBotones();
-    }
+    // ---------------- gestion de bloques de medicamento ----------------
 
     function actualizarNumerosYBotones() {
         const blocks = $("cm-medicamentos").querySelectorAll(".med-block");
         blocks.forEach(function (b, i) {
             b.querySelector(".med-num").textContent = i + 1;
         });
-        // Si solo queda 1, el boton de eliminar se desactiva visualmente
         if (blocks.length === 1) {
             blocks[0].querySelector(".med-block-remove").style.visibility = "hidden";
         } else {
@@ -111,10 +61,44 @@
         block.querySelector(".med-nombre").focus();
     }
 
+    function anadirMedicamentoConDatos(med) {
+        const contenedor = $("cm-medicamentos");
+        if (contenedor.children.length >= MAX_MEDICAMENTOS) return;
+
+        const tpl   = $("tpl-medicamento").content.cloneNode(true);
+        const block = tpl.querySelector(".med-block");
+
+        block.querySelector(".med-nombre").value = med.nombre || "";
+
+        const checks = block.querySelectorAll(".med-momentos input[type='checkbox']");
+        checks.forEach(function (c) {
+            if (med.momentos && med.momentos.includes(c.value)) {
+                c.checked = true;
+            }
+        });
+
+        const listaPrincipios = block.querySelector(".med-principios-list");
+        if (med.principios && med.principios.length > 0) {
+            for (const p of med.principios) {
+                const tplP = $("tpl-principio").content.cloneNode(true);
+                const row  = tplP.querySelector(".principio-row");
+                row.querySelector(".principio-nombre").value = p.nombre || "";
+                row.querySelector(".principio-mg").value =
+                    (p.mg !== null && p.mg !== undefined) ? p.mg : "";
+                listaPrincipios.appendChild(tplP);
+            }
+        }
+
+        contenedor.appendChild(tpl);
+        actualizarNumerosYBotones();
+    }
+
     function anadirPrincipio(medBlock) {
         const tpl = $("tpl-principio").content.cloneNode(true);
         medBlock.querySelector(".med-principios-list").appendChild(tpl);
     }
+
+    // ---------------- recoger datos del formulario ----------------
 
     function recogerDatos() {
         const blocks = $("cm-medicamentos").querySelectorAll(".med-block");
@@ -138,10 +122,54 @@
                 }
             });
 
-            meds.push({ nombre, momentos, principios });
+            meds.push({ nombre: nombre, momentos: momentos, principios: principios });
         });
         return meds;
     }
+
+    // ---------------- apertura del modal ----------------
+
+    /**
+     * Modo NUEVA: precarga con la entrada mas reciente, fecha = hoy.
+     */
+    async function abrirNueva() {
+        editandoId = null;
+        $("cm-titulo").textContent = "Actualizar medicación";
+
+        limpiarMedicamentos();
+
+        const todas = await MITENSION.listEntradasMedicacion();
+        if (todas.length > 0) {
+            const actual = todas[0];
+            for (const med of actual.medicamentos) {
+                anadirMedicamentoConDatos(med);
+            }
+        } else {
+            anadirMedicamento();
+        }
+
+        $("cm-fecha").value = MITENSION.hoyISO();
+        limpiarError();
+        MITENSION_UI.abrirModal("modal-cambiar-medicacion");
+    }
+
+    /**
+     * Modo EDITAR: precarga con la entrada concreta, fecha = la de la entrada.
+     */
+    function abrirEnModoEdicion(entrada) {
+        editandoId = entrada.id;
+        $("cm-titulo").textContent = "Editar medicación";
+
+        limpiarMedicamentos();
+        for (const med of entrada.medicamentos) {
+            anadirMedicamentoConDatos(med);
+        }
+        $("cm-fecha").value = entrada.fecha;
+        limpiarError();
+        MITENSION_UI.abrirModal("modal-cambiar-medicacion");
+    }
+
+    // ---------------- envio ----------------
 
     async function onSubmit(e) {
         e.preventDefault();
@@ -162,24 +190,34 @@
         const fecha = $("cm-fecha").value || MITENSION.hoyISO();
 
         try {
-            await MITENSION.addEntradaMedicacion(meds, fecha);
+            if (editandoId !== null) {
+                await MITENSION.updateEntradaMedicacion(editandoId, meds, fecha);
+            } else {
+                await MITENSION.addEntradaMedicacion(meds, fecha);
+            }
         } catch (err) {
             console.error(err);
             mostrarError("Error al guardar: " + err.message);
             return;
         }
 
+        const mensajeToast = editandoId !== null
+            ? "Entrada actualizada"
+            : "Medicación actualizada";
+
+        editandoId = null;
         MITENSION_UI.cerrarModal("modal-cambiar-medicacion");
         await MITENSION_UI.refrescarMedicacionActual();
-        MITENSION_UI.mostrarToast("Medicación actualizada", "ok");
+        MITENSION_UI.mostrarToast(mensajeToast, "ok");
     }
 
+    // ---------------- init ----------------
+
     document.addEventListener("DOMContentLoaded", function () {
-        $("btn-cambiar-medicacion").addEventListener("click", abrir);
+        $("btn-cambiar-medicacion").addEventListener("click", abrirNueva);
         $("form-cambiar-medicacion").addEventListener("submit", onSubmit);
         $("cm-add-med").addEventListener("click", anadirMedicamento);
 
-        // Delegacion de eventos para botones dinamicos dentro del modal
         $("cm-medicamentos").addEventListener("click", function (e) {
             const t = e.target;
             if (t.classList.contains("med-block-remove")) {
@@ -195,4 +233,7 @@
             }
         });
     });
+
+    window.MITENSION_UI = window.MITENSION_UI || {};
+    window.MITENSION_UI.abrirCambiarMedicacionEnModoEdicion = abrirEnModoEdicion;
 })();

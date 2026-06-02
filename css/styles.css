@@ -141,6 +141,17 @@ body {
 .toma-row.toma-amarillo { border-left-color: #e0c350; }
 .toma-row.toma-rojo     { border-left-color: #d36161; }
 
+.toma-clickable {
+    cursor: pointer;
+    transition: background-color 0.12s ease, transform 0.08s ease;
+}
+.toma-clickable:hover  { background-color: #f6fcfd; }
+.toma-clickable:active { transform: scale(0.99); }
+.toma-clickable:focus-visible {
+    outline: 2px solid var(--color-acento-oscuro);
+    outline-offset: 1px;
+}
+
 .toma-valores {
     display: flex;
     flex-direction: column;
@@ -183,6 +194,13 @@ body {
     flex-shrink: 0;
     max-height: 30vh;
     overflow-y: auto;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+.bloque-medicacion-actual:hover { background-color: #fafdfd; }
+.bloque-medicacion-actual:focus-visible {
+    outline: 2px solid var(--color-acento-oscuro);
+    outline-offset: -2px;
 }
 
 .bloque-titulo {
@@ -672,6 +690,156 @@ body {
 .btn-volver {
     display: block;
     margin: 0.4rem auto 0;
+}
+
+/* ============================================================
+   MODAL DETALLE DE TOMA (Editar / Borrar)
+   ============================================================ */
+.dt-fecha {
+    text-align: center;
+    color: var(--color-texto-suave);
+    font-size: 0.9rem;
+    margin-bottom: 0.7rem;
+}
+
+.dt-cifras-block {
+    border-radius: var(--radio);
+    padding: 1.2rem 1rem;
+    text-align: center;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-fondo);
+}
+
+.dt-cifras-block.dt-verde    { background-color: var(--color-verde);    border-color: #9fd99f; }
+.dt-cifras-block.dt-amarillo { background-color: var(--color-amarillo); border-color: #e8d57a; }
+.dt-cifras-block.dt-rojo     { background-color: var(--color-rojo);     border-color: #e8a0a0; }
+
+.dt-cifras-grandes {
+    display: block;
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-texto);
+}
+
+.dt-unidad {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+
+.dt-pulso {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--color-texto);
+    margin-bottom: 0.3rem;
+}
+
+.dt-categoria {
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-texto);
+    margin-bottom: 1rem;
+}
+
+.dt-acciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+/* Boton de borrado: rojo claro pero claro */
+.btn-borrar {
+    background-color: var(--color-rojo-accion);
+    color: #ffffff;
+}
+.btn-borrar:hover  { background-color: #d04545; }
+.btn-borrar:active { transform: translateY(1px); }
+
+/* Form-row-double: dos columnas (fecha + hora en editar) */
+.form-row-double {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+.form-row-double .form-row { margin-bottom: 0.5rem; }
+
+/* ============================================================
+   HISTORIAL DE MEDICACION
+   ============================================================ */
+.hm-lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.hm-entrada-row {
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    padding: 0.7rem 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+.hm-entrada-row:hover { background-color: #e2f6f7; }
+.hm-entrada-row:focus-visible {
+    outline: 2px solid var(--color-acento-oscuro);
+    outline-offset: 1px;
+}
+
+.hm-entrada-fecha {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-acento-oscuro);
+    margin-bottom: 0.2rem;
+}
+
+.hm-entrada-meds {
+    font-size: 0.88rem;
+    color: var(--color-texto-suave);
+    word-break: break-word;
+}
+
+.hm-detalle-meds {
+    margin-bottom: 0.8rem;
+    max-height: 45vh;
+    overflow-y: auto;
+}
+
+.hm-detalle-med {
+    background-color: var(--color-fondo);
+    border-radius: var(--radio);
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid var(--color-acento);
+}
+
+.hm-detalle-med h4 {
+    font-size: 0.98rem;
+    color: var(--color-texto);
+    margin-bottom: 0.25rem;
+}
+
+.hm-momentos {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+    margin-bottom: 0.3rem;
+}
+
+.hm-principios {
+    list-style: none;
+    padding-left: 0;
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+.hm-principios li::before {
+    content: "• ";
+    color: var(--color-acento);
 }
 
 /* ============================================================

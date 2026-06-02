@@ -31,7 +31,9 @@
             const fechaTxt = MITENSION.formatearFechaHoraToma(t.fecha, t.hora);
 
             const li = document.createElement("li");
-            li.className = "toma-row toma-" + cat;
+            li.className = "toma-row toma-clickable toma-" + cat;
+            li.setAttribute("role", "button");
+            li.setAttribute("tabindex", "0");
             li.innerHTML = `
                 <div class="toma-valores">
                     <span class="toma-cifras">${t.sistolica} / ${t.diastolica}</span>
@@ -41,6 +43,15 @@
                 </div>
                 <div class="toma-fecha">${escapeHTML(fechaTxt)}</div>
             `;
+            li.addEventListener("click", function () {
+                MITENSION_UI.abrirDetalleToma(t);
+            });
+            li.addEventListener("keydown", function (ev) {
+                if (ev.key === "Enter" || ev.key === " ") {
+                    ev.preventDefault();
+                    MITENSION_UI.abrirDetalleToma(t);
+                }
+            });
             lista.appendChild(li);
         }
     }

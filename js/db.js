@@ -108,7 +108,45 @@ async function addToma(sistolica, diastolica, pulso = null) {
 }
 
 async function listTomas() {
-    return await db.tomas.orderBy("createdAt").reverse().toArray();
+    // Orden por fecha y hora (lo que ve el usuario), descendente.
+    const todas = await db.tomas.toArray();
+    todas.sort(function (a, b) {
+        if (a.fecha !== b.fecha) return a.fecha < b.fecha ? 1 : -1;
+        if (a.hora  !== b.hora)  return a.hora  < b.hora  ? 1 : -1;
+        // empate -> el creado mas tarde primero
+        return a.createdAt < b.createdAt ? 1 : -1;
+    });
+    return todas;
+}
+
+/**
+ * Actualiza una toma existente con los datos dados.
+ * @param {number} id
+ * @param {{sistolica:number, diastolica:number, pulso:number|null, fecha:string, hora:string}} datos
+ */
+async function updateToma(id, datos) {
+    if (!Number.isInteger(datos.sistolica) || datos.sistolica < 0 || datos.sistolica > 999) {
+        throw new Error("sistolica debe ser entero 0-999");
+    }
+    if (!Number.isInteger(datos.diastolica) || datos.diastolica < 0 || datos.diastolica > 999) {
+        throw new Error("diastolica debe ser entero 0-999");
+    }
+    if (datos.pulso !== null && (!Number.isInteger(datos.pulso) || datos.pulso < 0 || datos.pulso > 999)) {
+        throw new Error("pulso debe ser entero 0-999 o null");
+    }
+    if (!datos.fecha || !/^\d{4}-\d{2}-\d{2}$/.test(datos.fecha)) {
+        throw new Error("fecha invalida (YYYY-MM-DD)");
+    }
+    if (!datos.hora || !/^\d{2}:\d{2}$/.test(datos.hora)) {
+        throw new Error("hora invalida (HH:MM)");
+    }
+    return await db.tomas.update(id, {
+        fecha:      datos.fecha,
+        hora:       datos.hora,
+        sistolica:  datos.sistolica,
+        diastolica: datos.diastolica,
+        pulso:      datos.pulso
+    });
 }
 
 async function deleteToma(id) {
@@ -161,6 +199,35 @@ async function getEntradaMedicacionVigente(fechaObjetivo) {
     return candidatos[0];
 }
 
+/**
+ * Actualiza una entrada de medicacion existente.
+ * @param {number} id
+ * @param {Array} medicamentos
+ * @param {string} fecha "YYYY-MM-DD"
+ */
+async function updateEntradaMedicacion(id, medicamentos, fecha) {
+    if (!Array.isArray(medicamentos) || medicamentos.length < 1) {
+        throw new Error("Se requiere al menos 1 medicamento.");
+    }
+    if (medicamentos.length > 5) {
+        throw new Error("Maximo 5 medicamentos por entrada.");
+    }
+    for (const m of medicamentos) {
+        if (!m.nombre || typeof m.nombre !== "string" || !m.nombre.trim()) {
+            throw new Error("Cada medicamento debe tener nombre.");
+        }
+        m.momentos   = Array.isArray(m.momentos)   ? m.momentos   : [];
+        m.principios = Array.isArray(m.principios) ? m.principios : [];
+    }
+    if (!fecha || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        throw new Error("fecha invalida (YYYY-MM-DD)");
+    }
+    return await db.entradas_medicacion.update(id, {
+        fecha:        fecha,
+        medicamentos: medicamentos
+    });
+}
+
 async function deleteEntradaMedicacion(id) {
     return await db.entradas_medicacion.delete(id);
 }
@@ -170,9 +237,9 @@ async function deleteEntradaMedicacion(id) {
 // ============================================================
 window.MITENSION = {
     db,
-    addToma, listTomas, deleteToma,
+    addToma, listTomas, updateToma, deleteToma,
     addEntradaMedicacion, listEntradasMedicacion,
-    getEntradaMedicacionVigente, deleteEntradaMedicacion,
+    getEntradaMedicacionVigente, updateEntradaMedicacion, deleteEntradaMedicacion,
     hoyISO, ahoraHora, formatearFechaHoraToma, formatearFecha,
     clasificarOMS, etiquetaCategoria
 };
