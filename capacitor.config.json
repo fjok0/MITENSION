@@ -1,0 +1,8 @@
+{
+  "appId": "com.fjok0.mitension",
+  "appName": "MITENSION",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}

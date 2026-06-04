@@ -13,3 +13,11 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Node / Capacitor (se regeneran en cada build de GitHub Actions)
+node_modules/
+www/
+android/
+ios/
+.capacitor/
+package-lock.json
