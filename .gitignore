@@ -1,5 +1,6 @@
 # Documentos personales que no deben subirse
 *.docx
+*.pdf
 ~$*
 
 # OS
