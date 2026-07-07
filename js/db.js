@@ -233,6 +233,39 @@ async function deleteEntradaMedicacion(id) {
 }
 
 // ============================================================
+// COPIA DE SEGURIDAD (exportar / importar)
+// ============================================================
+async function exportarBackup() {
+    const tomas = await db.tomas.toArray();
+    const entradas_medicacion = await db.entradas_medicacion.toArray();
+    return {
+        app: "MITENSION",
+        version: 1,
+        generadoEn: new Date().toISOString(),
+        tomas,
+        entradas_medicacion
+    };
+}
+
+async function importarBackup(backup) {
+    if (!backup || backup.app !== "MITENSION" ||
+        !Array.isArray(backup.tomas) || !Array.isArray(backup.entradas_medicacion)) {
+        throw new Error("El archivo no es una copia de seguridad válida de MITENSION");
+    }
+
+    // createdAt viaja como texto ISO en el JSON; se restaura como Date real
+    const tomas = backup.tomas.map(t => ({ ...t, createdAt: new Date(t.createdAt) }));
+    const entradas = backup.entradas_medicacion.map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
+
+    await db.transaction("rw", db.tomas, db.entradas_medicacion, async () => {
+        await db.tomas.clear();
+        await db.entradas_medicacion.clear();
+        if (tomas.length)    await db.tomas.bulkAdd(tomas);
+        if (entradas.length) await db.entradas_medicacion.bulkAdd(entradas);
+    });
+}
+
+// ============================================================
 // EXPOSICION GLOBAL
 // ============================================================
 window.MITENSION = {
@@ -241,5 +274,6 @@ window.MITENSION = {
     addEntradaMedicacion, listEntradasMedicacion,
     getEntradaMedicacionVigente, updateEntradaMedicacion, deleteEntradaMedicacion,
     hoyISO, ahoraHora, formatearFechaHoraToma, formatearFecha,
-    clasificarOMS, etiquetaCategoria
+    clasificarOMS, etiquetaCategoria,
+    exportarBackup, importarBackup
 };

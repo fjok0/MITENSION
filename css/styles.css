@@ -341,6 +341,12 @@ body {
     padding-right: 2rem;
 }
 
+.modal-separador {
+    border: none;
+    border-top: 1px solid var(--color-borde);
+    margin: 1.4rem 0;
+}
+
 .modal-hint {
     font-size: 0.85rem;
     color: var(--color-texto-suave);

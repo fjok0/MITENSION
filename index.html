@@ -301,6 +301,29 @@
                     </button>
                 </div>
                 <p class="inf-nota">Si tienes menos, se incluirán todas las que haya.</p>
+
+                <hr class="modal-separador">
+
+                <h2 class="modal-titulo" style="font-size: 1rem;">Copia de seguridad</h2>
+                <p class="modal-hint">
+                    Exporta todas tus tomas y tu medicación a un archivo. Guárdalo en el correo, Drive o
+                    donde prefieras para poder recuperarlo si desinstalas la app o cambias de móvil.
+                </p>
+                <div class="dt-acciones">
+                    <button type="button" id="btn-exportar-backup" class="btn btn-primario">
+                        Exportar copia de seguridad
+                    </button>
+                </div>
+                <p class="modal-hint" style="margin-top: 14px;">
+                    Para restaurar una copia anterior, selecciona el archivo exportado.
+                    <b>Esto reemplazará todos los datos actuales.</b>
+                </p>
+                <div class="dt-acciones">
+                    <button type="button" id="btn-importar-backup" class="btn btn-secundario">
+                        Importar copia de seguridad
+                    </button>
+                </div>
+                <input type="file" id="input-importar-backup" accept="application/json" class="oculto">
             </div>
 
             <!-- Vista de resultado: tras generar PDF -->
@@ -376,6 +399,7 @@
     <script src="js/ui-detalle-toma.js"></script>
     <script src="js/pdf-generator.js"></script>
     <script src="js/ui-informes.js"></script>
+    <script src="js/ui-backup.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
