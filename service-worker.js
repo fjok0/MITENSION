@@ -4,7 +4,7 @@
 // La app funciona 100% offline desde el segundo arranque.
 // ============================================================
 
-const CACHE_NAME = "mitension-v3";
+const CACHE_NAME = "mitension-v4";
 
 // Lista de TODOS los recursos de la app, que se descargan
 // y se cachean al instalar el service worker.
@@ -21,6 +21,7 @@ const PRECACHE = [
 
     "./js/db.js",
     "./js/ui-comunes.js",
+    "./js/archivos.js",
     "./js/ui-listado.js",
     "./js/ui-medicacion-actual.js",
     "./js/ui-nueva-toma.js",

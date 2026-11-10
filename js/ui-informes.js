@@ -40,13 +40,16 @@
 
         // Habilitar/deshabilitar Compartir segun soporte del navegador
         const btnComp = $("inf-compartir");
-        const soporta = !!(navigator.canShare && (function () {
-            try {
-                return navigator.canShare({
-                    files: [new File(["x"], "x.pdf", { type: "application/pdf" })]
-                });
-            } catch (e) { return false; }
-        })());
+        const btnGuardar = $("inf-guardar");
+
+        if (MITENSION_ARCHIVOS.esNativo()) {
+            // APK: un unico boton que abre el menu nativo de compartir
+            // (Drive, Gmail, WhatsApp, Archivos...), que ya incluye guardar y enviar.
+            btnGuardar.textContent = "Guardar / Compartir PDF";
+            btnComp.classList.add("oculto");
+        }
+
+        const soporta = MITENSION_ARCHIVOS.puedeCompartir("application/pdf");
 
         if (soporta) {
             btnComp.disabled = false;
@@ -85,8 +88,29 @@
         }
     }
 
-    function onClickGuardar() {
+    async function onClickGuardar() {
         if (!ultimoPDF) return;
+
+        if (MITENSION_ARCHIVOS.esNativo()) {
+            // APK: pdfmake .download() no funciona en el WebView -> menu nativo
+            try {
+                const base64 = await new Promise(function (resolve) {
+                    ultimoPDF.pdfDoc.getBase64(resolve);
+                });
+                await MITENSION_ARCHIVOS.guardarOCompartir({
+                    filename:    ultimoPDF.filename,
+                    mime:        "application/pdf",
+                    base64:      base64,
+                    title:       "MITENSION - Informe de tensión",
+                    dialogTitle: "Guardar o compartir el informe"
+                });
+            } catch (err) {
+                console.error(err);
+                mostrarError("No se pudo guardar el PDF: " + (err.message || err));
+            }
+            return;
+        }
+
         ultimoPDF.pdfDoc.download(ultimoPDF.filename);
     }
 

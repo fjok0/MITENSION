@@ -5,9 +5,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -24,8 +27,11 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      # Los runners de GitHub ya traen el Android SDK (ANDROID_HOME).
+      # La accion android-actions/setup-android@v3 fallaba, asi que se
+      # usa el SDK preinstalado y solo se aceptan las licencias.
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
 
       - name: Install npm dependencies
         run: npm install
@@ -52,3 +58,17 @@ jobs:
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
+
+      # El Release es la via de descarga publica del APK: cualquiera puede
+      # bajarlo sin iniciar sesion en GitHub (los artifacts si lo exigen).
+      # Se reemplaza en cada build.
+      - name: Publish APK as Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk mitension-debug.apk
+          gh release delete apk-latest --cleanup-tag --yes || true
+          gh release create apk-latest mitension-debug.apk \
+            --title "MITENSION APK (debug)" \
+            --notes "APK de depuracion generado automaticamente en cada push. Commit: ${{ github.sha }}" \
+            --target "${{ github.sha }}"
