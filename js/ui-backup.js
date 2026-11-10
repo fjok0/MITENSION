@@ -7,7 +7,20 @@
 
     function $(id) { return document.getElementById(id); }
 
+    function mostrarErrorBackup(texto) {
+        const e = $("backup-error");
+        e.textContent = texto;
+        e.classList.remove("oculto");
+    }
+
+    function limpiarErrorBackup() {
+        const e = $("backup-error");
+        e.textContent = "";
+        e.classList.add("oculto");
+    }
+
     async function onExportarBackup() {
+        limpiarErrorBackup();
         try {
             const backup = await MITENSION.exportarBackup();
             const json = JSON.stringify(backup, null, 2);
@@ -25,12 +38,10 @@
         } catch (err) {
             console.error(err);
             MITENSION_UI.mostrarToast("No se pudo exportar la copia de seguridad", "error");
-            // Detalle tecnico visible para poder diagnosticar el fallo en el movil
-            window.alert(
-                "No se pudo exportar la copia de seguridad." +
-                String.fromCharCode(10, 10) + "Detalle técnico:" + String.fromCharCode(10) +
-                MITENSION_ARCHIVOS.describir(err) +
-                String.fromCharCode(10, 10) + "Entorno: " + MITENSION_ARCHIVOS.entorno()
+            // Detalle tecnico fijo en pantalla (no desaparece) para diagnosticar el fallo
+            mostrarErrorBackup(
+                "No se pudo exportar. Detalle: " + MITENSION_ARCHIVOS.describir(err) +
+                "  ·  Entorno: " + MITENSION_ARCHIVOS.entorno()
             );
         }
     }
@@ -43,14 +54,20 @@
         const file = e.target.files[0];
         e.target.value = "";
         if (!file) return;
+        limpiarErrorBackup();
 
         const reader = new FileReader();
+        reader.onerror = function () {
+            mostrarErrorBackup("No se pudo leer el archivo seleccionado: " +
+                MITENSION_ARCHIVOS.describir(reader.error));
+        };
         reader.onload = async function () {
             let backup;
             try {
                 backup = JSON.parse(reader.result);
             } catch (err) {
                 MITENSION_UI.mostrarToast("El archivo no es un JSON válido", "error");
+                mostrarErrorBackup("El archivo seleccionado no es un JSON válido (" + file.name + ").");
                 return;
             }
 
@@ -67,12 +84,14 @@
                 await MITENSION_UI.refrescarMedicacionActual();
             } catch (err) {
                 MITENSION_UI.mostrarToast(err.message, "error");
+                mostrarErrorBackup("No se pudo importar: " + MITENSION_ARCHIVOS.describir(err));
             }
         };
         reader.readAsText(file);
     }
 
     document.addEventListener("DOMContentLoaded", function () {
+        $("backup-version").textContent = "Versión: " + MITENSION_ARCHIVOS.etiquetaVersion();
         $("btn-exportar-backup").addEventListener("click", onExportarBackup);
         $("btn-importar-backup").addEventListener("click", onSeleccionarArchivoImportar);
         $("input-importar-backup").addEventListener("change", onArchivoImportarSeleccionado);
