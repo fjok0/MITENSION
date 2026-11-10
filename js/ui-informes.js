@@ -106,7 +106,8 @@
                 });
             } catch (err) {
                 console.error(err);
-                mostrarError("No se pudo guardar el PDF: " + (err.message || err));
+                mostrarError("No se pudo guardar el PDF: " + MITENSION_ARCHIVOS.describir(err) +
+                             " (" + MITENSION_ARCHIVOS.entorno() + ")");
             }
             return;
         }

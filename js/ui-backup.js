@@ -25,6 +25,13 @@
         } catch (err) {
             console.error(err);
             MITENSION_UI.mostrarToast("No se pudo exportar la copia de seguridad", "error");
+            // Detalle tecnico visible para poder diagnosticar el fallo en el movil
+            window.alert(
+                "No se pudo exportar la copia de seguridad." +
+                String.fromCharCode(10, 10) + "Detalle técnico:" + String.fromCharCode(10) +
+                MITENSION_ARCHIVOS.describir(err) +
+                String.fromCharCode(10, 10) + "Entorno: " + MITENSION_ARCHIVOS.entorno()
+            );
         }
     }
 
